@@ -2,7 +2,7 @@ name: Deploy Ride Home to GitHub Pages
 
 on:
   push:
-    branches: [ "master", "main" ]
+    branches: [ "main" ]
   workflow_dispatch:
 
 permissions:
@@ -29,12 +29,18 @@ jobs:
       - name: Setup Pages
         uses: actions/configure-pages@v4
 
-      - name: Upload artifact (static index.html as the site)
+      - name: Prepare clean site artifact (only the companion page + assets)
+        run: |
+          mkdir -p _site
+          cp index.html ninja-bike.jpg final-itinerary-home-v4.md _site/
+          # Optionally include the plan markdown and any other static assets you want publicly visible
+
+      - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          # Publish the root index.html (Ride Home v4 companion) as the github.io entry
-          # If you prefer the Flutter web build instead, change the path below to 'app/build/web' after running flutter build web
-          path: '.'
+          # This deploys a minimal site: the beautiful static Ride Home companion
+          # (with the cropped Ninja bike image at the bottom of sections)
+          path: '_site'
 
       - name: Deploy to GitHub Pages
         id: deployment
