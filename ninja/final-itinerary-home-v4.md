@@ -10,7 +10,7 @@
 | **Total Distance** | ~381 miles |
 | **Route** | US-101 S → CA-152 E → I-5 S → CA-99 S → I-5 S |
 | **Avg Speed** | 80 mph |
-| **Depart** | 7:15 AM PST |
+| **Depart** | 8:30 AM PST |
 | **Est. Arrival** | ~1:21 PM PST |
 | **Total Stops** | 2 × gas (10 min) + 1 × lunch (60 min) |
 
@@ -18,7 +18,7 @@
 
 ## Full Itinerary
 
-### 🟢 7:15 AM — Depart Morgan Hill, CA
+### 🟢 8:30 AM — Depart Morgan Hill, CA
 - **Address:** Home, Morgan Hill, CA
 - **Conditions:** ~62°F, clear, calm winds
 - **Road:** US-101 S → CA-152 E → I-5 S
@@ -81,7 +81,7 @@
 
 | Segment | Temp | Wind | Gusts | Notes |
 |---|---|---|---|---|
-| Morgan Hill (7:15 AM) | 62°F | Calm | ~15 mph later | Cool dawn start |
+| Morgan Hill (8:30 AM) | 62°F | Calm | ~15 mph later | Cool dawn start |
 | Coalinga (8:45 AM) | ~70°F | Calm–light | ~15 mph | Easy conditions |
 | Tejon Pass / Grapevine (~10:15 AM) | ~75°F | W/NW 5–10 mph | **up to 25 mph** | Clear at this hour; winds build by afternoon |
 | Bakersfield (10:10 AM) | ~83°F | NW building | **up to 25 mph** | Hot; hydrate |
@@ -102,7 +102,7 @@
 
 ## Quick Reference
 ```
-7:15 AM   Depart    Morgan Hill, CA
+8:30 AM   Depart    Morgan Hill, CA
 8:45 AM   ⛽ GAS    Coalinga, CA (I-5/CA-198)       — 10 min
 8:55 AM   Rolling
 10:10 AM  🍳 LUNCH  24th Street Cafe, Bakersfield    — 60 min
