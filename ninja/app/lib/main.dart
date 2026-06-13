@@ -39,12 +39,12 @@ class TripStop {
 }
 
 const List<TripStop> kStops = [
-  // RIDE HOME v4 — Morgan Hill → Mission Viejo • depart 6:30 AM PST • 381 mi
-  TripStop(n: "1", title: "Roll Out — Home", town: "MORGAN HILL, CA • 6:30 AM", lat: 37.1305, lng: -121.6544, color: Color(0xFFCFC9BC), dish: "Full tank. Cool dawn. US-101 S → CA-152 E → I-5 S. First 90 min is the best riding of the day.", q: "Morgan Hill, CA"),
-  TripStop(n: "2", title: "⛽ Gas & Stretch", town: "COALINGA • I-5 @ CA-198 • ~8:00 AM", lat: 36.1397, lng: -120.3602, color: Color(0xFFFFB23E), dish: "Shell / Chevron / ARCO. 10 min stop. Stretch, water, smoke if you need, fuel. Still the cool part of the morning.", q: "I-5 at CA-198, Coalinga, CA"),
-  TripStop(n: "3", title: "🍳 Lunch & Gas", town: "24TH STREET CAFE • BAKERSFIELD • ~9:25 AM", lat: 35.3805, lng: -119.0200, color: Color(0xFFFF5D5D), dish: "1415 24th St, Bakersfield, CA 93301. Classic diner booths. 60 min. Hydrate aggressively — the hot valley leg is next. Fuel on exit.", web: "https://www.yelp.com/biz/24th-street-cafe-bakersfield", q: "1415 24th St, Bakersfield, CA 93301"),
-  TripStop(n: "4", title: "⛽ Gas & Stretch", town: "CASTAIC PILOT • I-5 EXIT 176 • ~11:20 AM", lat: 34.4894, lng: -118.6220, color: Color(0xFF4FB6A0), dish: "Pilot Travel Center, 31642 Castaic Rd. Big truck stop, full amenities. 10 min. Last real services before Grapevine. Watch crosswinds on the descent.", q: "Pilot Travel Center, 31642 Castaic Rd, Castaic, CA 91384"),
-  TripStop(n: "5", title: "🏁 Home", town: "MISSION VIEJO, CA • ~12:36 PM", lat: 33.6000, lng: -117.6719, color: Color(0xFFFFD27A), ring: true, dish: "Final 88 mi through Santa Clarita and OC. 381 miles complete. Beer earned. Put the bike away and enjoy the reset.", q: "Mission Viejo, CA"),
+  // RIDE HOME v4 — Morgan Hill → Mission Viejo • depart 7:15 AM PST • 381 mi
+  TripStop(n: "1", title: "Roll Out — Home", town: "MORGAN HILL, CA • 7:15 AM", lat: 37.1305, lng: -121.6544, color: Color(0xFFCFC9BC), dish: "Full tank. Cool dawn. US-101 S → CA-152 E → I-5 S. First 90 min is the best riding of the day.", q: "Morgan Hill, CA"),
+  TripStop(n: "2", title: "⛽ Gas & Stretch", town: "COALINGA • I-5 @ CA-198 • ~8:45 AM", lat: 36.1397, lng: -120.3602, color: Color(0xFFFFB23E), dish: "Shell / Chevron / ARCO. 10 min stop. Stretch, water, smoke if you need, fuel. Still the cool part of the morning.", q: "I-5 at CA-198, Coalinga, CA"),
+  TripStop(n: "3", title: "🍳 Lunch & Gas", town: "24TH STREET CAFE • BAKERSFIELD • ~10:10 AM", lat: 35.3805, lng: -119.0200, color: Color(0xFFFF5D5D), dish: "1415 24th St, Bakersfield, CA 93301. Classic diner booths. 60 min. Hydrate aggressively — the hot valley leg is next. Fuel on exit.", web: "https://www.yelp.com/biz/24th-street-cafe-bakersfield", q: "1415 24th St, Bakersfield, CA 93301"),
+  TripStop(n: "4", title: "⛽ Gas & Stretch", town: "CASTAIC PILOT • I-5 EXIT 176 • ~12:05 PM", lat: 34.4894, lng: -118.6220, color: Color(0xFF4FB6A0), dish: "Pilot Travel Center, 31642 Castaic Rd. Big truck stop, full amenities. 10 min. Last real services before Grapevine. Watch crosswinds on the descent.", q: "Pilot Travel Center, 31642 Castaic Rd, Castaic, CA 91384"),
+  TripStop(n: "5", title: "🏁 Home", town: "MISSION VIEJO, CA • ~1:21 PM", lat: 33.6000, lng: -117.6719, color: Color(0xFFFFD27A), ring: true, dish: "Final 88 mi through Santa Clarita and OC. 381 miles complete. Beer earned. Put the bike away and enjoy the reset.", q: "Mission Viejo, CA"),
 ];
 
 class NinjaTripLogApp extends StatelessWidget {
@@ -117,7 +117,7 @@ class _TripLogPageState extends State<TripLogPage> with SingleTickerProviderStat
     }
   }
 
-  // Ride Home v4 full route with all stops as waypoints (6:30 AM Morgan Hill -> Mission Viejo)
+  // Ride Home v4 full route with all stops as waypoints (7:15 AM Morgan Hill -> Mission Viejo)
   String _buildFullRouteUrl() {
     const origin = "Morgan Hill, CA";
     const dest = "Mission Viejo, CA";
@@ -191,7 +191,7 @@ class _TripLogPageState extends State<TripLogPage> with SingleTickerProviderStat
       appBar: AppBar(
         backgroundColor: const Color(0xFF0C0B10),
         elevation: 0,
-        title: const Text('RIDE HOME • NINJA 650 • 6:30 AM', style: TextStyle(fontWeight: FontWeight.w400, letterSpacing: 1.5, fontSize: 18, color: Color(0xFFF5EFE3))),
+        title: const Text('RIDE HOME • NINJA 650 • 7:15 AM', style: TextStyle(fontWeight: FontWeight.w400, letterSpacing: 1.5, fontSize: 18, color: Color(0xFFF5EFE3))),
         bottom: TabBar(
           controller: _tabController,
           indicatorColor: const Color(0xFFFFB23E),
@@ -229,9 +229,9 @@ class _TripLogPageState extends State<TripLogPage> with SingleTickerProviderStat
         const SizedBox(height: 6),
         const Text('Morgan Hill → Mission Viejo', style: TextStyle(fontSize: 36, fontWeight: FontWeight.w400, height: 0.95, color: Color(0xFFF5EFE3))),
         const SizedBox(height: 8),
-        const Text('381 miles. Depart 6:30 AM PST. 3 stops. One clean push over the Grapevine. Built as a driving companion you can actually use when you pull over at a truck stop.', style: TextStyle(color: Color(0xFFB6AE9F), fontSize: 15.5, height: 1.35)),
+        const Text('381 miles. Depart 7:15 AM PST. 3 stops. One clean push over the Grapevine. Built as a driving companion you can actually use when you pull over at a truck stop.', style: TextStyle(color: Color(0xFFB6AE9F), fontSize: 15.5, height: 1.35)),
         const SizedBox(height: 18),
-        Wrap(spacing: 8, runSpacing: 8, children: const [_Chip('381 mi'), _Chip('6:30 AM depart'), _Chip('~4h 46m ride'), _Chip('2 gas + 60 min lunch'), _Chip('~12:36 PM home')]),
+        Wrap(spacing: 8, runSpacing: 8, children: const [_Chip('381 mi'), _Chip('7:15 AM depart'), _Chip('~4h 46m ride'), _Chip('2 gas + 60 min lunch'), _Chip('~1:21 PM home')]),
         const SizedBox(height: 20),
         FilledButton.icon(
           style: FilledButton.styleFrom(backgroundColor: const Color(0xFFFFB23E), foregroundColor: const Color(0xFF160F04), padding: EdgeInsets.symmetric(horizontal: 22, vertical: 14)),
@@ -243,10 +243,10 @@ class _TripLogPageState extends State<TripLogPage> with SingleTickerProviderStat
         Container(
           decoration: BoxDecoration(border: Border.all(color: const Color(0xFF2A2733)), borderRadius: BorderRadius.circular(18), color: const Color(0xFF15131C)),
           child: const Row(children: [
-            Expanded(child: _Stat(k: '6:30A', l: 'Wheels up')),
+            Expanded(child: _Stat(k: '7:15A', l: 'Wheels up')),
             Expanded(child: _Stat(k: '381', l: 'miles total')),
             Expanded(child: _Stat(k: '3', l: 'stops')),
-            Expanded(child: _Stat(k: '12:36P', l: 'Est. arrival')),
+            Expanded(child: _Stat(k: '1:21P', l: 'Est. arrival')),
           ]),
         ),
       ]),
@@ -329,11 +329,11 @@ class _TripLogPageState extends State<TripLogPage> with SingleTickerProviderStat
       }
 
       final names = [
-        'DEPART 6:30 • Morgan Hill',
-        'GAS 8:00 • Coalinga (I-5/198)',
-        'LUNCH 9:25 • 24th St Cafe, BFL',
-        'GAS 11:20 • Castaic Pilot',
-        'HOME ~12:36 • Mission Viejo'
+        'DEPART 7:15 • Morgan Hill',
+        'GAS 8:45 • Coalinga (I-5/198)',
+        'LUNCH 10:10 • 24th St Cafe, BFL',
+        'GAS 12:05 • Castaic Pilot',
+        'HOME ~1:21 • Mission Viejo'
       ];
       final nextLabels = [
         'NAVIGATE TO COALINGA GAS',
@@ -464,7 +464,7 @@ class _TripLogPageState extends State<TripLogPage> with SingleTickerProviderStat
       children: [
         const Text('Ride Home — Full Timeline', style: TextStyle(fontSize: 26, color: Color(0xFFF5EFE3))),
         const SizedBox(height: 6),
-        const Text('6:30 AM wheels up. All nav buttons preload the exact next destination for one-tap voice guidance at every pull-over.', style: TextStyle(color: Color(0xFFB6AE9F))),
+        const Text('7:15 AM wheels up. All nav buttons preload the exact next destination for one-tap voice guidance at every pull-over.', style: TextStyle(color: Color(0xFFB6AE9F))),
         const SizedBox(height: 14),
         ...homeStops.asMap().entries.map((e) {
           final i = e.key;
@@ -497,7 +497,7 @@ class _TripLogPageState extends State<TripLogPage> with SingleTickerProviderStat
       const SizedBox(height: 24),
       const Text('Ride safe, Kyle. The valley, the heat, the Grapevine — Coalinga • Bakersfield • Castaic then home. One clean push. Enjoy every mile of the reset.', style: TextStyle(fontSize: 17, color: Color(0xFFF5EFE3), fontStyle: FontStyle.italic)),
       const SizedBox(height: 8),
-      const Text('RIDE HOME v4 (synced to final-itinerary-home-v4.md) • 6:30 AM PST • optimized rest-stop companion • github.io ready', style: TextStyle(color: Color(0xFF7E7869), fontSize: 12)),
+      const Text('RIDE HOME v4 (synced to final-itinerary-home-v4.md) • 7:15 AM PST • optimized rest-stop companion • github.io ready', style: TextStyle(color: Color(0xFF7E7869), fontSize: 12)),
       _bikeFooter(),
     ]);
   }
@@ -517,9 +517,10 @@ class _TripLogPageState extends State<TripLogPage> with SingleTickerProviderStat
           ),
           child: Image.asset(
             'assets/images/ninja-bike.jpg',
-            height: 125,
+            height: 195,
             width: double.infinity,
             fit: BoxFit.cover,
+            alignment: Alignment.center,
           ),
         ),
       ),
