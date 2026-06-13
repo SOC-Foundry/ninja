@@ -1,7 +1,9 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 void main() {
   runApp(const NinjaTripLogApp());
@@ -65,8 +67,8 @@ class NinjaTripLogApp extends StatelessWidget {
           onSurface: const Color(0xFFF5EFE3),
         ),
         textTheme: base.textTheme.copyWith(
-          displayLarge: const TextStyle(fontFamily: 'Staatliches', letterSpacing: 0.02, color: Color(0xFFF5EFE3), fontSize: 42),
-          headlineMedium: const TextStyle(fontFamily: 'Staatliches', letterSpacing: 0.02, color: Color(0xFFF5EFE3)),
+          displayLarge: GoogleFonts.staatliches(letterSpacing: 0.02, color: const Color(0xFFF5EFE3), fontSize: 42),
+          headlineMedium: GoogleFonts.staatliches(letterSpacing: 0.02, color: const Color(0xFFF5EFE3)),
           bodyMedium: const TextStyle(color: Color(0xFFF5EFE3)),
           bodySmall: const TextStyle(color: Color(0xFFB6AE9F)),
         ),
@@ -92,6 +94,13 @@ class _TripLogPageState extends State<TripLogPage> with SingleTickerProviderStat
   late final TabController _tabController;
   final MapController _mapController = MapController();
 
+  // Companion State (persists across tab changes)
+  int _leg = 0;
+  int _timerSec = 10 * 60;
+  bool _timerRunning = false;
+  final List<bool> _checks = List.filled(6, false);
+  Timer? _timer;
+
   @override
   void initState() {
     super.initState();
@@ -101,7 +110,38 @@ class _TripLogPageState extends State<TripLogPage> with SingleTickerProviderStat
   @override
   void dispose() {
     _tabController.dispose();
+    _timer?.cancel();
     super.dispose();
+  }
+
+  void _startTimer() {
+    _timer?.cancel();
+    setState(() {
+      _timerRunning = true;
+      if (_timerSec <= 0) {
+        _timerSec = (_leg == 2 ? 60 : 10) * 60;
+      }
+    });
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (_timerSec > 0) {
+        setState(() {
+          _timerSec--;
+        });
+      } else {
+        _timer?.cancel();
+        setState(() {
+          _timerRunning = false;
+        });
+      }
+    });
+  }
+
+  void _stopTimer() {
+    _timer?.cancel();
+    setState(() {
+      _timerRunning = false;
+      _timerSec = 0;
+    });
   }
 
   Future<void> _launchGoogleMaps(String url) async {
@@ -306,155 +346,138 @@ class _TripLogPageState extends State<TripLogPage> with SingleTickerProviderStat
 
   // ===================== REST STOP COMPANION TAB (the money feature) =====================
   Widget _buildCompanionTab() {
-    // Simple local state for the demo companion (in real use this would be richer + prefs)
-    return StatefulBuilder(builder: (context, setLocal) {
-      int leg = 0; // 0=depart, 1=coalinga gas, 2=lunch, 3=castaic, 4=home
-      int timerSec = 10 * 60;
-      bool timerRunning = false;
-      List<bool> checks = List.filled(6, false);
+    String fmt(int s) {
+      final m = (s ~/ 60).toString().padLeft(2, '0');
+      final sec = (s % 60).toString().padLeft(2, '0');
+      return '$m:$sec';
+    }
 
-      void tick() {
-        if (timerSec > 0) {
-          setLocal(() => timerSec--);
-          Future.delayed(const Duration(seconds: 1), tick);
-        } else {
-          setLocal(() => timerRunning = false);
-        }
-      }
+    final names = [
+      'DEPART 7:15 • Morgan Hill',
+      'GAS 8:45 • Coalinga (I-5/198)',
+      'LUNCH 10:10 • 24th St Cafe, BFL',
+      'GAS 12:05 • Castaic Pilot',
+      'HOME ~1:21 • Mission Viejo'
+    ];
+    final nextLabels = [
+      'NAVIGATE TO COALINGA GAS',
+      'NAVIGATE TO BAKERSFIELD LUNCH',
+      'NAVIGATE TO CASTAIC GAS',
+      'NAVIGATE FINAL — HOME',
+      'REPLAY FULL ROUTE'
+    ];
 
-      String fmt(int s) {
-        final m = (s ~/ 60).toString().padLeft(2, '0');
-        final sec = (s % 60).toString().padLeft(2, '0');
-        return '$m:$sec';
-      }
-
-      final names = [
-        'DEPART 7:15 • Morgan Hill',
-        'GAS 8:45 • Coalinga (I-5/198)',
-        'LUNCH 10:10 • 24th St Cafe, BFL',
-        'GAS 12:05 • Castaic Pilot',
-        'HOME ~1:21 • Mission Viejo'
-      ];
-      final nextLabels = [
-        'NAVIGATE TO COALINGA GAS',
-        'NAVIGATE TO BAKERSFIELD LUNCH',
-        'NAVIGATE TO CASTAIC GAS',
-        'NAVIGATE FINAL — HOME',
-        'REPLAY FULL ROUTE'
-      ];
-
-      return SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-          Container(
-            padding: const EdgeInsets.all(18),
-            decoration: BoxDecoration(color: const Color(0xFF15131C), borderRadius: BorderRadius.circular(18), border: Border.all(color: const Color(0xFF2A2733))),
-            child: Column(children: [
-              const Text('CURRENT / NEXT LEG', style: TextStyle(fontSize: 11, letterSpacing: 2, color: Color(0xFFFFB23E))),
-              const SizedBox(height: 6),
-              Text(names[leg], style: const TextStyle(fontSize: 26, fontWeight: FontWeight.w600, color: Color(0xFFF5EFE3))),
-              const SizedBox(height: 4),
-              Text(leg < 4 ? 'Tap the giant button below to load exact next destination with voice nav ready.' : '381 miles. Done. Beer time.', style: const TextStyle(color: Color(0xFFB6AE9F))),
-              const SizedBox(height: 16),
-              SizedBox(
-                height: 62,
-                child: FilledButton.icon(
-                  style: FilledButton.styleFrom(backgroundColor: const Color(0xFFFFB23E), foregroundColor: const Color(0xFF160F04), textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
-                  onPressed: () => _launchGoogleMaps(leg < 4 ? _nextLegUrl(leg) : _buildFullRouteUrl()),
-                  icon: const Icon(Icons.navigation, size: 22),
-                  label: Text(nextLabels[leg]),
-                ),
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(16),
+      child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+        Container(
+          padding: const EdgeInsets.all(18),
+          decoration: BoxDecoration(color: const Color(0xFF15131C), borderRadius: BorderRadius.circular(18), border: Border.all(color: const Color(0xFF2A2733))),
+          child: Column(children: [
+            const Text('CURRENT / NEXT LEG', style: TextStyle(fontSize: 11, letterSpacing: 2, color: Color(0xFFFFB23E))),
+            const SizedBox(height: 6),
+            Text(names[_leg], style: const TextStyle(fontSize: 26, fontWeight: FontWeight.w600, color: Color(0xFFF5EFE3))),
+            const SizedBox(height: 4),
+            Text(_leg < 4 ? 'Tap the giant button below to load exact next destination with voice nav ready.' : '381 miles. Done. Beer time.', style: const TextStyle(color: Color(0xFFB6AE9F))),
+            const SizedBox(height: 16),
+            SizedBox(
+              height: 62,
+              child: FilledButton.icon(
+                style: FilledButton.styleFrom(backgroundColor: const Color(0xFFFFB23E), foregroundColor: const Color(0xFF160F04), textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
+                onPressed: () => _launchGoogleMaps(_leg < 4 ? _nextLegUrl(_leg) : _buildFullRouteUrl()),
+                icon: const Icon(Icons.navigation, size: 22),
+                label: Text(nextLabels[_leg]),
               ),
-            ]),
-          ),
-
-          const SizedBox(height: 16),
-
-          // Progress stepper
-          Row(children: List.generate(5, (i) {
-            final active = i <= leg;
-            return Expanded(
-              child: Container(
-                margin: const EdgeInsets.symmetric(horizontal: 3),
-                height: 7,
-                decoration: BoxDecoration(
-                  color: active ? const Color(0xFFFFB23E) : const Color(0xFF2A2733),
-                  borderRadius: BorderRadius.circular(99),
-                ),
-              ),
-            );
-          })),
-          const SizedBox(height: 6),
-          const Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-            Text('Depart', style: TextStyle(fontSize: 10, color: Color(0xFF7E7869))),
-            Text('Coalinga', style: TextStyle(fontSize: 10, color: Color(0xFF7E7869))),
-            Text('Lunch', style: TextStyle(fontSize: 10, color: Color(0xFF7E7869))),
-            Text('Castaic', style: TextStyle(fontSize: 10, color: Color(0xFF7E7869))),
-            Text('Home', style: TextStyle(fontSize: 10, color: Color(0xFF7E7869))),
+            ),
           ]),
+        ),
 
-          const SizedBox(height: 18),
+        const SizedBox(height: 16),
 
-          // Leg selector — big friendly buttons for when you actually pull over
-          const Text('I AM AT THIS STOP', style: TextStyle(fontSize: 12, letterSpacing: 1.5, color: Color(0xFFFFB23E))),
-          const SizedBox(height: 8),
-          Wrap(spacing: 8, runSpacing: 8, children: List.generate(5, (i) => ChoiceChip(
-            label: Text(names[i], style: const TextStyle(fontSize: 13)),
-            selected: leg == i,
-            onSelected: (_) => setLocal(() => leg = i),
-            selectedColor: const Color(0xFFFFB23E),
-            backgroundColor: const Color(0xFF1D1A26),
-            labelStyle: TextStyle(color: leg == i ? const Color(0xFF160F04) : const Color(0xFFF5EFE3)),
-          ))),
-
-          const SizedBox(height: 22),
-
-          // Rest timer + checklist — the real rest stop UX
-          Container(
-            padding: const EdgeInsets.all(18),
-            decoration: BoxDecoration(color: const Color(0xFF15131C), border: Border.all(color: const Color(0xFF2A2733)), borderRadius: BorderRadius.circular(16)),
-            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              const Text('REST TIMER  •  10 min gas / 60 min lunch', style: TextStyle(fontSize: 12, color: Color(0xFFB6AE9F))),
-              const SizedBox(height: 8),
-              Text(fmt(timerSec), style: const TextStyle(fontSize: 54, fontWeight: FontWeight.w400, color: Color(0xFFF5EFE3), letterSpacing: 2, fontFamily: 'Staatliches')),
-              const SizedBox(height: 10),
-              Row(children: [
-                Expanded(child: FilledButton(
-                  style: FilledButton.styleFrom(backgroundColor: const Color(0xFFFFB23E), foregroundColor: const Color(0xFF160F04)),
-                  onPressed: () { setLocal(() { timerRunning = true; if (timerSec <= 0) timerSec = (leg == 2 ? 60 : 10) * 60; }); tick(); },
-                  child: const Text('START / RESTART'),
-                )),
-                const SizedBox(width: 8),
-                OutlinedButton(onPressed: () => setLocal(() { timerSec += 5 * 60; }), child: const Text('+5 MIN')),
-                const SizedBox(width: 8),
-                OutlinedButton(onPressed: () => setLocal(() { timerRunning = false; timerSec = 0; }), child: const Text('CLEAR')),
-              ]),
-              const SizedBox(height: 16),
-              const Text('REST STOP CHECKLIST', style: TextStyle(fontSize: 11, color: Color(0xFF7E7869))),
-              const SizedBox(height: 6),
-              Wrap(spacing: 12, children: [
-                for (int i = 0; i < 6; i++)
-                  FilterChip(
-                    label: Text(['Fuel', 'Water', 'Stretch', 'Smoke', 'Gear', 'Phone'][i]),
-                    selected: checks[i],
-                    onSelected: (v) => setLocal(() => checks[i] = v),
-                  ),
-              ]),
-              const SizedBox(height: 8),
-              const Text('Everything here is local only. Perfect for standing at the pump or a booth. Tap the giant nav button the second you’re ready to roll.', style: TextStyle(fontSize: 12, color: Color(0xFF7E7869))),
-            ]),
-          ),
-
-          const SizedBox(height: 24),
-          OutlinedButton.icon(
-            onPressed: () => _launchGoogleMaps(_buildFullRouteUrl()),
-            icon: const Icon(Icons.map),
-            label: const Text('ALSO OPEN THE FULL ROUTE IN GOOGLE MAPS'),
-          ),
-          _bikeFooter(),
+        // Progress stepper
+        Row(children: List.generate(5, (i) {
+          final active = i <= _leg;
+          return Expanded(
+            child: Container(
+              margin: const EdgeInsets.symmetric(horizontal: 3),
+              height: 7,
+              decoration: BoxDecoration(
+                color: active ? const Color(0xFFFFB23E) : const Color(0xFF2A2733),
+                borderRadius: BorderRadius.circular(99),
+              ),
+            ),
+          );
+        })),
+        const SizedBox(height: 6),
+        const Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+          Text('Depart', style: TextStyle(fontSize: 10, color: Color(0xFF7E7869))),
+          Text('Coalinga', style: TextStyle(fontSize: 10, color: Color(0xFF7E7869))),
+          Text('Lunch', style: TextStyle(fontSize: 10, color: Color(0xFF7E7869))),
+          Text('Castaic', style: TextStyle(fontSize: 10, color: Color(0xFF7E7869))),
+          Text('Home', style: TextStyle(fontSize: 10, color: Color(0xFF7E7869))),
         ]),
-      );
-    });
+
+        const SizedBox(height: 18),
+
+        // Leg selector — big friendly buttons for when you actually pull over
+        const Text('I AM AT THIS STOP', style: TextStyle(fontSize: 12, letterSpacing: 1.5, color: Color(0xFFFFB23E))),
+        const SizedBox(height: 8),
+        Wrap(spacing: 8, runSpacing: 8, children: List.generate(5, (i) => ChoiceChip(
+          label: Text(names[i], style: const TextStyle(fontSize: 13)),
+          selected: _leg == i,
+          onSelected: (_) => setState(() => _leg = i),
+          selectedColor: const Color(0xFFFFB23E),
+          backgroundColor: const Color(0xFF1D1A26),
+          labelStyle: TextStyle(color: _leg == i ? const Color(0xFF160F04) : const Color(0xFFF5EFE3)),
+        ))),
+
+        const SizedBox(height: 22),
+
+        // Rest timer + checklist — the real rest stop UX
+        Container(
+          padding: const EdgeInsets.all(18),
+          decoration: BoxDecoration(color: const Color(0xFF15131C), border: Border.all(color: const Color(0xFF2A2733)), borderRadius: BorderRadius.circular(16)),
+          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            const Text('REST TIMER  •  10 min gas / 60 min lunch', style: TextStyle(fontSize: 12, color: Color(0xFFB6AE9F))),
+            const SizedBox(height: 8),
+            Text(fmt(_timerSec), style: GoogleFonts.staatliches(fontSize: 54, fontWeight: FontWeight.w400, color: const Color(0xFFF5EFE3), letterSpacing: 2)),
+            const SizedBox(height: 10),
+            Row(children: [
+              Expanded(child: FilledButton(
+                style: FilledButton.styleFrom(backgroundColor: const Color(0xFFFFB23E), foregroundColor: const Color(0xFF160F04)),
+                onPressed: _startTimer,
+                child: const Text('START / RESTART'),
+              )),
+              const SizedBox(width: 8),
+              OutlinedButton(onPressed: () => setState(() { _timerSec += 5 * 60; }), child: const Text('+5 MIN')),
+              const SizedBox(width: 8),
+              OutlinedButton(onPressed: _stopTimer, child: const Text('CLEAR')),
+            ]),
+            const SizedBox(height: 16),
+            const Text('REST STOP CHECKLIST', style: TextStyle(fontSize: 11, color: Color(0xFF7E7869))),
+            const SizedBox(height: 6),
+            Wrap(spacing: 12, children: [
+              for (int i = 0; i < 6; i++)
+                FilterChip(
+                  label: Text(['Fuel', 'Water', 'Stretch', 'Smoke', 'Gear', 'Phone'][i]),
+                  selected: _checks[i],
+                  onSelected: (v) => setState(() => _checks[i] = v),
+                ),
+            ]),
+            const SizedBox(height: 8),
+            const Text('Everything here is local only. Perfect for standing at the pump or a booth. Tap the giant nav button the second you’re ready to roll.', style: TextStyle(fontSize: 12, color: Color(0xFF7E7869))),
+          ]),
+        ),
+
+        const SizedBox(height: 24),
+        OutlinedButton.icon(
+          onPressed: () => _launchGoogleMaps(_buildFullRouteUrl()),
+          icon: const Icon(Icons.map),
+          label: const Text('ALSO OPEN THE FULL ROUTE IN GOOGLE MAPS'),
+        ),
+        _bikeFooter(),
+      ]),
+    );
   }
 
   Widget _buildTimelineTab() {

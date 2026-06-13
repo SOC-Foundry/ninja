@@ -38,9 +38,8 @@ dependencies:
   flutter_map: ^7.0.0
   latlong2: ^0.9.1
   shared_preferences: ^2.3.0
+  google_fonts: ^6.2.1
   # For web Google Maps embed we use dart:html + HtmlElementView (no extra plugin required)
-  # google_fonts: ^6.2.1  # optional for exact fonts
-  # google_maps_flutter: ^2.6.1  # for native Google Maps widget (add API key for web in web/index.html)
 
 dev_dependencies:
   flutter_test:
