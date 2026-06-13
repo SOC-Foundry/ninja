@@ -1,0 +1,41 @@
+# Flutter
+**/build/
+**/android/
+**/ios/
+**/web/canvaskit/
+**/web/*.js
+**/web/*.wasm
+**/public/
+app/build/
+app/.dart_tool/
+app/.flutter-plugins
+app/.flutter-plugins-dependencies
+app/.packages
+app/.pub-cache/
+app/.pub/
+*.iml
+*.log
+
+# Derived / build artifacts we don't want in source
+app/assets/NOTICES
+app/assets/AssetManifest*
+app/assets/FontManifest.json
+public/
+app/build/web/
+
+# IDE / OS
+.DS_Store
+.vscode/
+.idea/
+*.swp
+
+# Large or temp
+*.tmp
+*.bak
+
+# The cropped bike is committed on purpose; keep the original photo if you want
+# but we can ignore huge raw photos if any
+
+# Environment
+.env
+.env.*
