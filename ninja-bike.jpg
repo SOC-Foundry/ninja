@@ -1,1 +1,1 @@
-$(cat /tmp/bike.b64)
+$(cat /tmp/ninja_bike.b64)
