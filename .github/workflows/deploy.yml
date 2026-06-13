@@ -45,3 +45,4 @@ jobs:
         uses: actions/deploy-pages@v4
 
 # v2 - cleaned up duplicate old workflow in subdir
+# force redeploy 2026-06-13 to ensure custom index.html is published
