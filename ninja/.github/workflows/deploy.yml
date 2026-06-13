@@ -29,17 +29,23 @@ jobs:
       - name: Setup Pages
         uses: actions/configure-pages@v4
 
-      - name: Prepare clean site artifact (only the companion page + assets)
+      - name: Prepare clean site artifact (static Ride Home companion)
         run: |
           mkdir -p _site
           cp index.html ninja-bike.jpg final-itinerary-home-v4.md _site/
-          # Optionally include the plan markdown and any other static assets you want publicly visible
+          # Create .nojekyll so GitHub Pages doesn't try to run Jekyll processing
+          touch _site/.nojekyll
+          echo "Deploying the static companion page (root index.html) as the GitHub.io homepage"
+          ls -la _site/
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          # This deploys a minimal site: the beautiful static Ride Home companion
-          # (with the cropped Ninja bike image at the bottom of sections)
+          # Deploys ONLY the companion site:
+          # - index.html (the full dark-themed Ride Home v4 driving companion with rest stop tools, 7:15 AM schedule, bike image strips, Google Maps deep links)
+          # - ninja-bike.jpg (full bike photo cropped to show the entire motorcycle)
+          # - final-itinerary-home-v4.md (the plan)
+          # This is intentional — not the Flutter app in app/, not raw Markdown list.
           path: '_site'
 
       - name: Deploy to GitHub Pages
