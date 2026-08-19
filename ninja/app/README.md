@@ -1,17 +1,11 @@
 # ninja_trip_log
 
-Coastal Reset: Ninja 650 US-101 trip log with baked waypoints and Google Maps integration
+Flutter web companion for the Ninja 650. See the repo [README](../../README.md) for the multi-trip design and the Boise → Home itinerary.
 
-## Getting Started
+```bash
+cd ~/projects/sf/ninja/ninja/app
+flutter pub get
+flutter run -d chrome
+```
 
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
-- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+Trips are defined in `lib/trips.dart`. Do not hardcode a route in `main.dart`.
