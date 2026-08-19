@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_map/flutter_map.dart';
@@ -7,6 +8,25 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'trips.dart';
+
+/// Web reports Android by default, so overlay scrollbars look real but ignore mouse drag.
+class _TripScrollBehavior extends MaterialScrollBehavior {
+  const _TripScrollBehavior();
+
+  @override
+  Set<PointerDeviceKind> get dragDevices => const {
+        PointerDeviceKind.touch,
+        PointerDeviceKind.mouse,
+        PointerDeviceKind.trackpad,
+        PointerDeviceKind.stylus,
+      };
+
+  @override
+  Widget buildScrollbar(BuildContext context, Widget child, ScrollableDetails details) {
+    // Companion / timeline / tips wrap their own interactive Scrollbar + controller.
+    return child;
+  }
+}
 
 void main() {
   runApp(const NinjaTripLogApp());
@@ -21,7 +41,18 @@ class NinjaTripLogApp extends StatelessWidget {
     return MaterialApp(
       title: 'Ninja 650 · Trip Log',
       debugShowCheckedModeBanner: false,
+      scrollBehavior: const _TripScrollBehavior(),
       theme: base.copyWith(
+        platform: TargetPlatform.linux,
+        scrollbarTheme: const ScrollbarThemeData(
+          thumbVisibility: WidgetStatePropertyAll(true),
+          trackVisibility: WidgetStatePropertyAll(true),
+          interactive: true,
+          thickness: WidgetStatePropertyAll(10),
+          radius: Radius.circular(8),
+          thumbColor: WidgetStatePropertyAll(Color(0xFFFFB23E)),
+          trackColor: WidgetStatePropertyAll(Color(0xFF2A2733)),
+        ),
         scaffoldBackgroundColor: const Color(0xFF0C0B10),
         colorScheme: base.colorScheme.copyWith(
           primary: const Color(0xFFFFB23E),
@@ -58,6 +89,9 @@ class _TripLogPageState extends State<TripLogPage> with SingleTickerProviderStat
 
   late final TabController _tabController;
   final MapController _mapController = MapController();
+  final ScrollController _companionScroll = ScrollController();
+  final ScrollController _timelineScroll = ScrollController();
+  final ScrollController _tipsScroll = ScrollController();
 
   Trip _trip = kBoiseHome;
   int _leg = 0;
@@ -103,6 +137,9 @@ class _TripLogPageState extends State<TripLogPage> with SingleTickerProviderStat
   @override
   void dispose() {
     _tabController.dispose();
+    _companionScroll.dispose();
+    _timelineScroll.dispose();
+    _tipsScroll.dispose();
     _timer?.cancel();
     super.dispose();
   }
@@ -257,6 +294,7 @@ class _TripLogPageState extends State<TripLogPage> with SingleTickerProviderStat
       ),
       body: TabBarView(
         controller: _tabController,
+        physics: const NeverScrollableScrollPhysics(),
         children: [
           _buildCompanionTab(),
           _buildMapTab(),
@@ -264,6 +302,7 @@ class _TripLogPageState extends State<TripLogPage> with SingleTickerProviderStat
           _buildTipsTab(),
         ],
       ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
       floatingActionButton: FloatingActionButton.extended(
         backgroundColor: const Color(0xFFFFB23E),
         foregroundColor: const Color(0xFF160F04),
@@ -346,8 +385,15 @@ class _TripLogPageState extends State<TripLogPage> with SingleTickerProviderStat
     final progressCount = _trip.progressLabels.length;
     final progressAt = _trip.progressIndexForLeg[_leg.clamp(0, _trip.progressIndexForLeg.length - 1)];
 
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
+    return Scrollbar(
+      controller: _companionScroll,
+      thumbVisibility: true,
+      trackVisibility: true,
+      interactive: true,
+      thickness: 10,
+      child: SingleChildScrollView(
+      controller: _companionScroll,
+      padding: const EdgeInsets.fromLTRB(16, 16, 22, 16),
       child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
         if (_trip.photoFullBleed) ...[
           _photoBlock(),
@@ -467,13 +513,21 @@ class _TripLogPageState extends State<TripLogPage> with SingleTickerProviderStat
         ),
         if (!_trip.photoFullBleed) _photoBlock(),
       ]),
+    ),
     );
   }
 
   Widget _buildTimelineTab() {
     String? lastDay;
-    return ListView(
-      padding: const EdgeInsets.all(16),
+    return Scrollbar(
+      controller: _timelineScroll,
+      thumbVisibility: true,
+      trackVisibility: true,
+      interactive: true,
+      thickness: 10,
+      child: ListView(
+      controller: _timelineScroll,
+      padding: const EdgeInsets.fromLTRB(16, 16, 22, 16),
       children: [
         if (_trip.photoFullBleed) ...[
           _photoBlock(),
@@ -507,11 +561,21 @@ class _TripLogPageState extends State<TripLogPage> with SingleTickerProviderStat
         ),
         if (!_trip.photoFullBleed) _photoBlock(),
       ],
+    ),
     );
   }
 
   Widget _buildTipsTab() {
-    return ListView(padding: const EdgeInsets.all(16), children: [
+    return Scrollbar(
+      controller: _tipsScroll,
+      thumbVisibility: true,
+      trackVisibility: true,
+      interactive: true,
+      thickness: 10,
+      child: ListView(
+      controller: _tipsScroll,
+      padding: const EdgeInsets.fromLTRB(16, 16, 22, 16),
+      children: [
       if (_trip.photoFullBleed) ...[
         _photoBlock(),
         const SizedBox(height: 16),
@@ -524,7 +588,9 @@ class _TripLogPageState extends State<TripLogPage> with SingleTickerProviderStat
       const SizedBox(height: 8),
       const Text('Ninja 650 trip companion • Love\'s when you can • github.io ready', style: TextStyle(color: Color(0xFF7E7869), fontSize: 12)),
       if (!_trip.photoFullBleed) _photoBlock(),
-    ]);
+    ],
+    ),
+    );
   }
 
   Widget _photoBlock() {
