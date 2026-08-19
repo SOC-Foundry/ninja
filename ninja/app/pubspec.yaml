@@ -1,5 +1,5 @@
 name: ninja_trip_log
-description: "Ride Home v4: Ninja 650 Morgan Hill to Mission Viejo • June 13 2026 • 6:30 AM depart • Rest-stop optimized driving companion with preloaded Google Maps"
+description: "Ninja 650 trip companion: Ride Home (Morgan Hill → MV) and Boise → Home (Wells / Primm). Love's fuel. Preloaded Google Maps."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
@@ -65,6 +65,7 @@ flutter:
 
   assets:
     - assets/images/ninja-bike.jpg
+    - assets/images/boise-sunset.jpg
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
